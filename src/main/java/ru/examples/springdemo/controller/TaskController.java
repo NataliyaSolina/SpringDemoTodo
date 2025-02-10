@@ -47,13 +47,6 @@ public class TaskController {
         return taskRepository.save(task);
     }
 
-//    @PatchMapping("/tasks/{id}:mark-is-done")
-//    public Task patchByIdMark(@PathVariable Long id) {
-//        Task task = taskRepository.findById(id).orElse(null);
-//        assert task != null;
-//        task.setDone(true);
-//        return taskRepository.save(task);
-//    }
     @PatchMapping("/tasks/{id}:mark-is-done")
     public void patchByIdMark(@PathVariable Long id) {
         taskRepository.markIsDone(id);
