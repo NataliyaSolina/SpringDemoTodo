@@ -1,17 +1,22 @@
 package ru.examples.springdemo.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import ru.examples.springdemo.model.Task;
+import ru.examples.springdemo.model.User;
 import ru.examples.springdemo.repository.TaskRepository;
+import ru.examples.springdemo.service.UserServiceImpl;
 
 import java.util.List;
 
 @RestController
+@RequiredArgsConstructor
 public class TaskController {
 
-    @Autowired
-    private TaskRepository taskRepository;
+    private final TaskRepository taskRepository;
+    private final UserServiceImpl userService;
+
 
     @PostMapping("/tasks")
     public Task create(@RequestBody Task task) {
@@ -20,7 +25,12 @@ public class TaskController {
 
     @GetMapping("/tasks")
     public Iterable<Task> getAll() {
-        return (List<Task>) taskRepository.findAll();
+        User user = userService.getCurrentUser();
+
+        if (user.getLogin().equalsIgnoreCase("admin")) {
+            return taskRepository.findAll();
+        }
+        return taskRepository.findTasksByUserId(user.getId());
     }
 
     @GetMapping("/tasks/{id}")

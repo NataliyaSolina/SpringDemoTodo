@@ -8,6 +8,9 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.examples.springdemo.model.Task;
+import ru.examples.springdemo.model.User;
+
+import java.util.Optional;
 
 @Repository
 @Transactional
@@ -16,4 +19,6 @@ public interface TaskRepository extends PagingAndSortingRepository<Task, Long>, 
     @Modifying
     @Query("UPDATE Task t SET t.done = TRUE WHERE t.id = :id")
     void markIsDone(@Param("id") Long id);
+
+    Iterable<Task> findTasksByUserId(Long userId);
 }
