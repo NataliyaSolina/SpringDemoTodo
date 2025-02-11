@@ -1,4 +1,5 @@
-CREATE TABLE task (
+CREATE TABLE task
+(
     id          BIGSERIAL PRIMARY KEY,
     date        DATE    NOT NULL,
     description TEXT,
