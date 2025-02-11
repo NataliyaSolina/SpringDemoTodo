@@ -3,6 +3,7 @@ CREATE TABLE task
     id          BIGSERIAL PRIMARY KEY,
     date        DATE    NOT NULL,
     description TEXT,
+    user_id     BIGSERIAL NOT NULL,
     done        BOOLEAN NOT NULL DEFAULT FALSE
 );
 
