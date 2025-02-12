@@ -12,3 +12,6 @@ flyway:
   enabled: true
   locations:
     - 'classpath:db/migration'
+api:
+  server:
+    url=http://localhost:8080
