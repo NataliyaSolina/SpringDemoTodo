@@ -12,7 +12,7 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(hidden = true)
+    @Schema(description = "Уникальный идентификатор задачи", example = "1", accessMode = Schema.AccessMode.READ_ONLY)
     private Long id;
 
     @Schema(description = "Дата (дедлайн) задачи", example = "2025-02-12", accessMode = Schema.AccessMode.READ_WRITE)
