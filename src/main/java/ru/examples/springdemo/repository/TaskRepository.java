@@ -8,9 +8,6 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 import ru.examples.springdemo.model.Task;
-import ru.examples.springdemo.model.User;
-
-import java.util.Optional;
 
 @Repository
 @Transactional

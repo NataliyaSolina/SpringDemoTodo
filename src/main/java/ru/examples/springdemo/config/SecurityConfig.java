@@ -1,5 +1,6 @@
 package ru.examples.springdemo.config;
 
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -18,19 +19,12 @@ import ru.examples.springdemo.handler.CustomAuthenticationSuccessHandler;
 
 
 @Configuration
+@AllArgsConstructor
 public class SecurityConfig {
 
     private final UserDetailsService userDetailsService;
     private final CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler;
     private final CustomAuthenticationFailureHandler customAuthenticationFailureHandler;
-
-    public SecurityConfig(UserDetailsService userDetailsService,
-                          CustomAuthenticationSuccessHandler customAuthenticationSuccessHandler,
-                          CustomAuthenticationFailureHandler customAuthenticationFailureHandler) {
-        this.userDetailsService = userDetailsService;
-        this.customAuthenticationSuccessHandler = customAuthenticationSuccessHandler;
-        this.customAuthenticationFailureHandler = customAuthenticationFailureHandler;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

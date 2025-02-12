@@ -12,7 +12,7 @@ public class Task {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(hidden=true)
+    @Schema(hidden = true)
     private Long id;
 
     @Schema(description = "Дата (дедлайн) задачи", example = "2025-02-12", accessMode = Schema.AccessMode.READ_WRITE)
@@ -21,7 +21,7 @@ public class Task {
     @Schema(description = "Описание задачи", example = "Закончить курс", accessMode = Schema.AccessMode.READ_WRITE)
     private String description;
 
-    @Column(name="user_id")
+    @Column(name = "user_id")
     // TODO: 12.02.2025 12:07 один ко многим привязку сделать
     @Schema(description = "Идентификатор пользователя которому принадлежит задача", example = "2", accessMode = Schema.AccessMode.READ_ONLY)
     private Long userId;

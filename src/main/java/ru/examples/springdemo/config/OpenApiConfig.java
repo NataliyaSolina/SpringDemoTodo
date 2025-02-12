@@ -15,17 +15,18 @@ import java.util.List;
 public class OpenApiConfig {
 
     private Environment environment;
-//    private final String url = environment.getProperty("api.server.url");
+
+    //    private final String url = environment.getProperty("api.server.url");
     @Bean
     public OpenAPI api() {
         return new OpenAPI()
                 .info(new Info()
-                                .title("Todo Service - сервис списка дел")
-                                .description("Это API предоставляет эндпоинты для управления задачами пользователей")
-                                .version("1.0")
-                                .contact(new Contact()
-                                        .name("Nataliya Solina")
-                                        .email("livegrafics@mail.ru")))
+                        .title("Todo Service - сервис списка дел")
+                        .description("Это API предоставляет эндпоинты для управления задачами пользователей")
+                        .version("1.0")
+                        .contact(new Contact()
+                                .name("Nataliya Solina")
+                                .email("livegrafics@mail.ru")))
                 .servers(List.of(new Server()
                         .url("http://localhost:8080")
                         .description("Development")));

@@ -2,10 +2,7 @@ package ru.examples.springdemo.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Size;
 import lombok.Data;
-
-import java.time.LocalDate;
 
 @Entity
 @Table(name = "users")
@@ -14,7 +11,7 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Schema(hidden=true)
+    @Schema(hidden = true)
     private Long id;
 
     @Schema(description = "Уникальный логин пользователя", example = "Nata", accessMode = Schema.AccessMode.READ_WRITE)
