@@ -6,11 +6,16 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import ru.examples.springdemo.model.AppError;
 import ru.examples.springdemo.model.Task;
 import ru.examples.springdemo.service.TaskServiceImpl;
 
 import java.util.List;
+
+import static java.lang.String.format;
 
 @RestController
 @RequiredArgsConstructor
@@ -40,11 +45,15 @@ public class TaskController {
     @GetMapping("/tasks/{id}")
     @Operation(summary = "Вывод задачи по id",
             description = "Позволяет вывести задачу по заданному id")
-    public Task getTaskById(
+    public ResponseEntity<?> getTaskById(
             @Parameter(description = "ID задачи, данные по которой запрашиваются",
                     required = true)
             @PathVariable Long id) {
-        return taskService.getById(id);
+        return taskService.getById(id) != null
+                ? new ResponseEntity<>(taskService.getById(id), HttpStatus.OK)
+                : new ResponseEntity<>(
+                new AppError(HttpStatus.NOT_FOUND.value(), format("Таски с заданным id = %d у данного пользователя нет", id)),
+                HttpStatus.NOT_FOUND);
     }
 
     @PutMapping("/tasks/{id}")
