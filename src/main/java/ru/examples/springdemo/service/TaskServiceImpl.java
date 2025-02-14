@@ -26,9 +26,9 @@ public class TaskServiceImpl {
         if (user.getLogin().equalsIgnoreCase("admin")) {
 
         } else {
-            task.setUserId(user.getId());
+            task.setUser(user);
         }
-
+        System.out.println(task);
         try {
             return taskRepository.save(task);
         } catch (Exception e) {
@@ -58,7 +58,7 @@ public class TaskServiceImpl {
         Task taskOld = getById(id);
 
         task.setId(id);
-        task.setUserId(taskOld.getUserId());
+        task.setUser(taskOld.getUser());
         task.setDone(taskOld.isDone());
         try {
             return taskRepository.save(task);
