@@ -8,6 +8,7 @@ import java.time.LocalDate;
 
 @Entity
 @Data
+@Table(name = "task")
 public class Task {
 
     @Id
@@ -25,6 +26,9 @@ public class Task {
     // TODO: 12.02.2025 12:07 один ко многим привязку сделать
     @Schema(description = "Идентификатор пользователя которому принадлежит задача", example = "2", accessMode = Schema.AccessMode.READ_ONLY)
     private Long userId;
+//    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+//    @JoinColumn(name = "user_id", nullable = false)
+//private User user;
 
     @Schema(description = "Отметка выполнения задачи", example = "false", accessMode = Schema.AccessMode.READ_ONLY)
     private boolean done;

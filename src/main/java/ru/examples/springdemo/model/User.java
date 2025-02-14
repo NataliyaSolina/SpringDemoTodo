@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 @Entity
-@Table(name = "users")
 @Data
+@Table(name = "users")
 public class User {
 
     @Id
@@ -20,4 +20,8 @@ public class User {
     @Schema(description = "Уникальный пароль пользователя (храниться в зашифрованном виде)", example = "Spring3", accessMode = Schema.AccessMode.WRITE_ONLY)
     private String password;
 
+//    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
+//    @JoinColumn(name = "user_id")
+//    private List<Task> tasks = new ArrayList<>();
 }
+
