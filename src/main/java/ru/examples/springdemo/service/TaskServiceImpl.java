@@ -3,11 +3,16 @@ package ru.examples.springdemo.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import ru.examples.springdemo.exeption.ResourceForbiddenException;
+import ru.examples.springdemo.exeption.ResourceInternalServerErrorException;
+import ru.examples.springdemo.exeption.ResourceNotFoundException;
 import ru.examples.springdemo.model.Task;
 import ru.examples.springdemo.model.User;
 import ru.examples.springdemo.repository.TaskRepository;
 
 import java.util.List;
+
+import static java.lang.String.format;
 
 @Service
 @RequiredArgsConstructor
@@ -18,9 +23,17 @@ public class TaskServiceImpl {
 
     public Task create(Task task) {
         User user = userService.getCurrentUser();
-        task.setUserId(user.getId());
+        if (user.getLogin().equalsIgnoreCase("admin")) {
 
-        return taskRepository.save(task);
+        } else {
+            task.setUserId(user.getId());
+        }
+
+        try {
+            return taskRepository.save(task);
+        } catch (Exception e) {
+            throw new ResourceInternalServerErrorException("Не получилось создать");
+        }
     }
 
     public List<Task> getAllByUser() {
@@ -33,54 +46,56 @@ public class TaskServiceImpl {
 
     public Task getById(Long id) {
         User user = userService.getCurrentUser();
-
+        Task task = taskRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(format("Таски с id = %d не найдено", id)));
         return (user.getLogin().equalsIgnoreCase("admin")
-                ? taskRepository.findById(id).orElse(null)
-                : taskRepository.findTasksByIdAndUserId(id, user.getId()).orElse(null));
+                ? task
+                : taskRepository.findTasksByIdAndUserId(id, user.getId())
+                .orElseThrow(() -> new ResourceForbiddenException(format("К таске с id = %d нет доступа у данного пользователя", id))));
     }
 
     public Task putById(Long id, Task task) {
         Task taskOld = getById(id);
 
-        if (taskOld != null) {
-            task.setId(id);
-            task.setUserId(taskOld.getUserId());
-            task.setDone(taskOld.isDone());
+        task.setId(id);
+        task.setUserId(taskOld.getUserId());
+        task.setDone(taskOld.isDone());
+        try {
             return taskRepository.save(task);
-        } else {
-            return null;
+        } catch (Exception e) {
+            throw new ResourceInternalServerErrorException(format("Не получилось изменить задачу с id = %d", id));
         }
     }
 
     public void deleteById(Long id) {
         Task task = getById(id);
 
-        if (task != null) {
+        try {
             taskRepository.deleteById(id);
-        } else {
-
+        } catch (Exception e) {
+            throw new ResourceInternalServerErrorException(format("Не получилось удалить задачу с id = %d", id));
         }
     }
 
     public Task patchById(Long id) {
         Task task = getById(id);
 
-        if (task != null) {
             task.setDone(!task.isDone());
+        try {
             return taskRepository.save(task);
-        } else {
-            return null;
+        } catch (Exception e) {
+            throw new ResourceInternalServerErrorException(format("Не получилось изменить задачу с id = %d", id));
         }
     }
 
     public Task patchByIdMark(Long id) {
         Task task = getById(id);
 
-        if (task != null) {
-            taskRepository.markIsDone(id);
-            return getById(id);
-        } else {
-            return null;
+        task.setDone(true);
+        try {
+            return taskRepository.save(task);
+        } catch (Exception e) {
+            throw new ResourceInternalServerErrorException(format("Не получилось изменить задачу с id = %d", id));
         }
     }
 }
