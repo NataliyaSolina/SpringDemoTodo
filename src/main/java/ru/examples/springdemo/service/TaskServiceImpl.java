@@ -23,12 +23,15 @@ public class TaskServiceImpl {
 
     public Task create(Task task) {
         User user = userService.getCurrentUser();
-        if (user.getLogin().equalsIgnoreCase("admin")) {
 
+        if (user.getLogin().equalsIgnoreCase("admin")) {
+            if (task.getUser() == null) {
+                task.setUser(user);
+            }
         } else {
             task.setUser(user);
         }
-        System.out.println(task);
+
         try {
             return taskRepository.save(task);
         } catch (Exception e) {
@@ -48,6 +51,7 @@ public class TaskServiceImpl {
         User user = userService.getCurrentUser();
         Task task = taskRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(format("Таски с id = %d не найдено", id)));
+
         return (user.getLogin().equalsIgnoreCase("admin")
                 ? task
                 : taskRepository.findTasksByIdAndUserId(id, user.getId())
@@ -60,6 +64,7 @@ public class TaskServiceImpl {
         task.setId(id);
         task.setUser(taskOld.getUser());
         task.setDone(taskOld.isDone());
+
         try {
             return taskRepository.save(task);
         } catch (Exception e) {
@@ -80,7 +85,8 @@ public class TaskServiceImpl {
     public Task patchById(Long id) {
         Task task = getById(id);
 
-            task.setDone(!task.isDone());
+        task.setDone(!task.isDone());
+
         try {
             return taskRepository.save(task);
         } catch (Exception e) {
@@ -92,6 +98,7 @@ public class TaskServiceImpl {
         Task task = getById(id);
 
         task.setDone(true);
+
         try {
             return taskRepository.save(task);
         } catch (Exception e) {
