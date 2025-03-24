@@ -15,6 +15,7 @@ import ru.examples.springdemo.service.TaskServiceImpl;
 import java.util.List;
 
 @RestController
+//@RequestMapping("/admin")
 @RequiredArgsConstructor
 @ApiResponses({
         @ApiResponse(responseCode = "200", description = "Задача изменена"),
