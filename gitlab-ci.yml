@@ -28,7 +28,6 @@ test:
     reports:
       junit: build/test-results/test/**/TEST-*.xml
 
-
 push to hub:
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
@@ -77,3 +76,4 @@ deploy:
       export $(cat .env | xargs) &&
       docker-compose up -d --build
       "
+
