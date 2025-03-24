@@ -1,0 +1,79 @@
+stages:
+  - build
+  - test
+  - deploy
+
+variables:
+  GRADLE_IMAGE: 'gradle:8.6-jdk17-alpine'
+  DOCKER_IMAGE: 'docker:stable'
+
+build:
+  image: $GRADLE_IMAGE
+  stage: build
+  script:
+    - gradle assemble
+  artifacts:
+    paths:
+      - build/libs/*.jar
+
+test:
+  image: $GRADLE_IMAGE
+  stage: test
+  needs:
+    - build
+  script:
+    - gradle check
+  artifacts:
+    when: always
+    reports:
+      junit: build/test-results/test/**/TEST-*.xml
+
+
+push to hub:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  stage: deploy
+  needs:
+    - build
+    - test
+  image: $DOCKER_IMAGE
+  services:
+    - docker:dind
+  script:
+    - docker build -t planner .
+    - echo "$DOCKER_HUB_PASSWORD" | docker login --username $DOCKER_HUB_LOGIN --password-stdin
+    - docker tag planner $DOCKER_HUB_USERNAME/planner:$CI_COMMIT_SHORT_SHA
+    - docker push $DOCKER_HUB_USERNAME/planner:$CI_COMMIT_SHORT_SHA
+
+deploy:
+  rules:
+    - if: '$CI_COMMIT_BRANCH == "main"'
+  stage: deploy
+  needs:
+    - build
+    - test
+    - push to hub
+  image: $GRADLE_IMAGE
+  before_script:
+    - command -v ssh-agent >/dev/null || ( apk update -qq && apk add openssh-client -qq)
+    - eval $(ssh-agent -s)
+    - chmod 400 "$SSH_PRIVATE_KEY"
+    - ssh-add "$SSH_PRIVATE_KEY"
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - mkdir -p ~/.ssh && touch ~/.ssh/known_hosts
+    - echo "$SSH_KNOWN_HOSTS" >> ~/.ssh/known_hosts
+    - export $(grep -v '^#' .env | xargs -0)
+    - apk update -qq && apk add -qq openssh-client
+  script:
+    - ssh root@78.40.217.105 "cd ./planner &&
+      DOCKER_TAG=\$(grep '^DOCKER_TAG=' .env | awk -F '=' '{print \$2}') &&
+      docker stop PlannerServ &&
+      docker rm PlannerServ &&
+      echo \$DOCKER_TAG &&
+      docker rmi -f \$DOCKER_TAG &&
+      docker pull $DOCKER_HUB_USERNAME/planner:$CI_COMMIT_SHORT_SHA &&
+      sed -i \"s/^DOCKER_TAG=.*/DOCKER_TAG=$DOCKER_HUB_USERNAME\/planner:$CI_COMMIT_SHORT_SHA/\" .env &&
+      export $(cat .env | xargs) &&
+      docker-compose up -d --build
+      "
